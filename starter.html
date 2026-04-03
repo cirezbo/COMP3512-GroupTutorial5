@@ -1,9 +1,13 @@
 <!DOCTYPE html>
+<!-- Credit Ahmad Abouahmad, Chibuzo Uzoka, and Liam Ingram-->
+
 <html>
 <head>
   <title>Favorite Books SPA</title>
   <style>
-    /* CSS code can be written here */
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -13,16 +17,107 @@
 <!--Write html code here- no php for this tutorial-->
 
    <!-- Navigation buttons -->
-   <!-- View 1: Book List -->
+  <div class="nav">
+    <button id="show-list">View Books</button>
+    <button id="show-form">Add Book</button>
+  </div>  
 
+   <!-- View 1: Book List -->
+  <div id="list-view">
+    <h2>Book List</h2>
+    <ul id="books"></ul>
+  </div>
 
     <!-- View 2: Add Book -->
+  <div id="form-view" class="hidden">
+    <h2>Add a New Book</h2>
+    <form id="add-book">
+      <label>Title:</label>
+      <input type="text" id="title" required>
+      <br>
 
+      <label>Author:</label>
+      <input type="text" id="author" required>
+      <br>
+
+      <button type="submit">Add Book</button>
+    </form>
+  </div>
 
 <script>
+  
 // JSON data
+let BOOKS=`[{ "title": "1984", "author": "George Orwell" },
+  { "title": "To Kill a Mockingbird", "author": "Harper Lee" },
+  { "title": "The Great Gatsby", "author": "F. Scott Fitzgerald" },
+  { "title": "Pride and Prejudice", "author": "Jane Austen" },
+  { "title": "The Hobbit", "author": "J.R.R. Tolkien" }
+  ]`;  
 //javascript code
 
+const booksArray = JSON.parse(BOOKS);
+const listView = document.getElementById("list-view");
+const formView = document.getElementById("form-view");
+const bookList = document.getElementById("books");
+const form = document.getElementById("add-book");
+
+const listBtn = document.getElementById("show-list");
+const formBtn = document.getElementById("show-form");
+
+listBtn.addEventListener("click", () => {
+  listView.classList.remove("hidden");
+  formView.classList.add("hidden");
+});
+
+formBtn.addEventListener("click", () => {
+  formView.classList.remove("hidden");
+  listView.classList.add("hidden");
+});
+
+function renderBooks() {
+  bookList.innerHTML = "";
+
+booksArray.forEach((book, index) => {
+  const li = document.createElement("li");
+  li.textContent = `${book.title} by ${book.author} `;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+
+  deleteBtn.addEventListener("click", () => {
+    booksArray.splice(index, 1);
+      updateJSON();
+      renderBooks();
+  });
+
+  li.appendChild(deleteBtn);
+  bookList.appendChild(li);  
+});
+}
+
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById("title").value;
+  const author = document.getElementById("author").value;
+
+  booksArray.push({ title, author});
+
+  updateJSON();
+  renderBooks();
+
+  form.reset();
+
+  listView.classList.remove("hidden");
+  formView.classList.add("hidden");
+});
+
+function updateJSON() {
+  BOOKS = JSON.stringify(booksArray);
+}
+
+renderBooks();
 </script>
 
 </body>
